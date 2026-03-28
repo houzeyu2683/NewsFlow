@@ -1,0 +1,17 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Debug news-agent",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${workspaceFolder}/main.py",
+            "args": [
+                "--query", "幫我生成每日股票報告"
+            ],
+            "cwd": "${workspaceFolder}/",
+            "console": "integratedTerminal",
+            "justMyCode": false
+        }
+    ]
+}
