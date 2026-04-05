@@ -1,0 +1,22 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: worker
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: worker
+  template:
+    metadata:
+      labels:
+        app: worker
+    spec:
+      serviceAccountName: newsflow-ksa
+      containers:
+      - name: worker
+        image: us-central1-docker.pkg.dev/project-999ca28f-35e8-45ea-8b7/newsflow/newsflow:latest
+        command: ["python", "api/worker.py"]
+        envFrom:
+        - secretRef:
+            name: newsflow-env
