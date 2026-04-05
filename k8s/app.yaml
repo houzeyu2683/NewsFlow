@@ -1,25 +1,38 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: worker
+  name: app
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: worker
+      app: app
   template:
     metadata:
       labels:
-        app: worker
+        app: app
     spec:
-      serviceAccountName: newsflow-ksa
       containers:
-      - name: worker
+      - name: app
         image: us-central1-docker.pkg.dev/project-999ca28f-35e8-45ea-8b7/newsflow/newsflow:latest
-        command: ["python", "api/worker.py"]
+        command: ["python", "app/app.py"]
+        ports:
+        - containerPort: 7860
         env:
         - name: PYTHONPATH
           value: /app
         envFrom:
         - secretRef:
             name: newsflow-env
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: app
+spec:
+  type: NodePort
+  selector:
+    app: app
+  ports:
+  - port: 80
+    targetPort: 7860
