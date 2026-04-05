@@ -24,7 +24,7 @@ steps:
       - deployment/app
       - app=${_REGION}-docker.pkg.dev/${PROJECT_ID}/newsflow/newsflow:${SHORT_SHA}
     env:
-      - "CLOUDSDK_COMPUTE_REGION=${_REGION}"
+      - "CLOUDSDK_COMPUTE_ZONE=${_ZONE}"
       - "CLOUDSDK_CONTAINER_CLUSTER=${_CLUSTER}"
 
   - name: "gcr.io/cloud-builders/kubectl"
@@ -34,7 +34,7 @@ steps:
       - deployment/api
       - api=${_REGION}-docker.pkg.dev/${PROJECT_ID}/newsflow/newsflow:${SHORT_SHA}
     env:
-      - "CLOUDSDK_COMPUTE_REGION=${_REGION}"
+      - "CLOUDSDK_COMPUTE_ZONE=${_ZONE}"
       - "CLOUDSDK_CONTAINER_CLUSTER=${_CLUSTER}"
 
   - name: "gcr.io/cloud-builders/kubectl"
@@ -44,11 +44,12 @@ steps:
       - deployment/worker
       - worker=${_REGION}-docker.pkg.dev/${PROJECT_ID}/newsflow/newsflow:${SHORT_SHA}
     env:
-      - "CLOUDSDK_COMPUTE_REGION=${_REGION}"
+      - "CLOUDSDK_COMPUTE_ZONE=${_ZONE}"
       - "CLOUDSDK_CONTAINER_CLUSTER=${_CLUSTER}"
 
 substitutions:
   _REGION: us-central1
+  _ZONE: us-central1-a
   _CLUSTER: newsflow-cluster
 
 options:
