@@ -1,0 +1,56 @@
+steps:
+  # Build Docker image
+  - name: "gcr.io/cloud-builders/docker"
+    args:
+      - build
+      - -t
+      - "${_REGION}-docker.pkg.dev/${PROJECT_ID}/newsflow/newsflow:${SHORT_SHA}"
+      - -t
+      - "${_REGION}-docker.pkg.dev/${PROJECT_ID}/newsflow/newsflow:latest"
+      - .
+
+  # Push to Artifact Registry
+  - name: "gcr.io/cloud-builders/docker"
+    args:
+      - push
+      - "--all-tags"
+      - "${_REGION}-docker.pkg.dev/${PROJECT_ID}/newsflow/newsflow"
+
+  # Deploy to GKE
+  - name: "gcr.io/cloud-builders/kubectl"
+    args:
+      - set
+      - image
+      - deployment/app
+      - app=${_REGION}-docker.pkg.dev/${PROJECT_ID}/newsflow/newsflow:${SHORT_SHA}
+    env:
+      - "CLOUDSDK_COMPUTE_REGION=${_REGION}"
+      - "CLOUDSDK_CONTAINER_CLUSTER=${_CLUSTER}"
+
+  - name: "gcr.io/cloud-builders/kubectl"
+    args:
+      - set
+      - image
+      - deployment/api
+      - api=${_REGION}-docker.pkg.dev/${PROJECT_ID}/newsflow/newsflow:${SHORT_SHA}
+    env:
+      - "CLOUDSDK_COMPUTE_REGION=${_REGION}"
+      - "CLOUDSDK_CONTAINER_CLUSTER=${_CLUSTER}"
+
+  - name: "gcr.io/cloud-builders/kubectl"
+    args:
+      - set
+      - image
+      - deployment/worker
+      - worker=${_REGION}-docker.pkg.dev/${PROJECT_ID}/newsflow/newsflow:${SHORT_SHA}
+    env:
+      - "CLOUDSDK_COMPUTE_REGION=${_REGION}"
+      - "CLOUDSDK_CONTAINER_CLUSTER=${_CLUSTER}"
+
+substitutions:
+  _REGION: us-central1
+  _CLUSTER: newsflow-cluster
+
+options:
+  logging: CLOUD_LOGGING_ONLY
+  default_logs_bucket_behavior: REGIONAL_USER_OWNED_BUCKET
